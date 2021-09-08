@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users-details</title>
+</head>
+
+<body>
+    <style>
+        body {
+            background-color: #FAE5D3;
+        }
+
+        .box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .userDetails-box {
+            border: 2px solid #FFF933;
+            margin: 10px;
+            padding: 2px 20px;
+            background-color: #ABEBC6;
+        }
+
+        #btn {
+            width: 90%;
+            height: 35px;
+            border: 1px solid #73C6B6;
+            background-color: #D2B4DE;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .divPost {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            width: 250px;
+            height: 150px;
+            margin: 20px;
+            padding: 10px;
+            border: 2px solid #FFF933;
+            background-color: #ABEBC6;
+            text-align: center;
+        }
+        .btnDetails {
+            border: 1px solid #73C6B6;
+            background-color: #D2B4DE;
+            font-size: 15px;
+            cursor: pointer; 
+            padding: 5px 10px;
+        }
+
+        #post-box {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+    <div class="box">
+        <div class="userDetails-box"></div>
+        <button id='btn'>post of current user</button>
+    </div>
+    <div id="post-box"></div>
+    <script>
+        const x = localStorage.getItem('users');
+        const user = JSON.parse(x);
+        console.log(user)
+        const UserDetailsBox = document.getElementsByClassName('userDetails-box')[0];
+        let { id, name, username, email,
+            address: { street, suite, city, zipcode, geo: { lat, lng } },
+            phone, website, company: { catchPhrase, bs } } = user;
+        UserDetailsBox.innerHTML = `<h3>id:${id}</h3> <h3>name:${name}</h3> <h3>username:${username}</h3> <h3>email:${email}</h3>  <h3>street:${street}</h3>
+ <h3>suite:${suite}</h3> <h3>city:${city}</h3> <h3>zipcode:${zipcode}</h3> <h3>lat:${lat}</h3>  <h3>lng:${lng}</h3> <h3>phone:${phone}</h3>
+<h3> website:${website}</h3> <h3> company:${user.company.name}</h3>  <h3>catchPhrase:${catchPhrase}</h3>  <h3>bs:${bs}</h3>`;
+
+        const btn = document.getElementById('btn');
+        btn.onclick = () => {
+            fetch(`https://jsonplaceholder.typicode.com/users/${user.id}/posts`)
+                .then(response => response.json())
+                .then(posts => {
+                    let postBox = document.getElementById('post-box')
+                    postBox.innerHTML = '';
+                    posts.map(responce => {
+                        let divPost = document.createElement('div')
+                        divPost.className = 'divPost'
+                        const link = document.createElement('a');
+                        const btnDetails = document.createElement('button');
+                        btnDetails.className = 'btnDetails'
+                        btnDetails.innerHTML = 'Post details';
+                        divPost.innerHTML = `<h3>${responce.title}</h3>`
+                        link.append(btnDetails);
+                        link.href = '../post-details/post-details.html'
+                        divPost.append(link);
+                        postBox.append(divPost)
+                        btnDetails.onclick = () => {
+                            localStorage.setItem('post', JSON.stringify(responce));
+                        }
+                    })
+                })
+        }
+    </script>
+</body>
+
+</html>
